@@ -16,7 +16,7 @@
   grid-column: 1 / 3;
 }
 
-.changeStatusBtn {
+.changeTabBtn {
   all: unset;
   display: flex;
   gap: 4px;
@@ -27,7 +27,7 @@
   align-self: end;
 }
 
-.changeStatusBtn .btnText {
+.changeTabBtn .btnText {
   font-weight: bold;
   text-decoration: underline;
 }

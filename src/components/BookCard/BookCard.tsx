@@ -1,14 +1,19 @@
-import { Book } from '../../types'
+import { Book, TabName } from '../../types'
 import { Tag } from '../Tag'
 import styles from './BookCard.module.css'
 
-export type BookCardProps = Book
+export type BookCardProps = Book & {
+  tabName: TabName
+  onChangeTab: (tabName: TabName) => void
+}
 
 export const BookCard = ({
   author,
   title,
   description,
-  tags
+  tags,
+  tabName,
+  onChangeTab
 }: BookCardProps) => (
   <div className={styles.root}>
     <div>
@@ -17,15 +22,40 @@ export const BookCard = ({
     <h2 className={styles.title}>
       {title}
     </h2>
-    <button
-      className={styles.changeStatusBtn}
-      type="button"
-    >
-      <span className={styles.btnText}>
-        start reading
-      </span>
-      →
-    </button>
+    {tabName === 'toRead' ? (
+      <button
+        className={styles.changeTabBtn}
+        type="button"
+        onClick={() => onChangeTab('inProgress')}
+      >
+        <span className={styles.btnText}>
+          start reading
+        </span>
+        →
+      </button>
+    ) : tabName === 'inProgress' ? (
+      <button
+        className={styles.changeTabBtn}
+        type="button"
+        onClick={() => onChangeTab('done')}
+      >
+        <span className={styles.btnText}>
+          finish reading
+        </span>
+        →
+      </button>
+    ) : (
+      <button
+        className={styles.changeTabBtn}
+        type="button"
+        onClick={() => onChangeTab('toRead')}
+      >
+        <span className={styles.btnText}>
+          return in «to read»
+        </span>
+        ↲
+      </button>
+    )}
     <div className={styles.description}>
       {description}
     </div>

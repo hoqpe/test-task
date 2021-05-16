@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
+import * as idb from 'idb-keyval'
 import { Book, Tab, TabName } from './types'
+import { useQueryState } from './hooks'
 import { Panel } from './components/Panel'
 import { BookCard } from './components/BookCard'
 
@@ -21,9 +23,15 @@ const fetchBooks = async (): Promise<{ items: Book[] }> => {
   return await res.json()
 }
 
+const defaultQueryState = { tabName: 'toRead' as BooksTab['name'] }
+
 const App = () => {
   const [books, setBooks] = useState<Book[]>([])
-  const [booksTabs] = useState<BooksTabs>()
+  const [booksTabs, setBooksTabs] = useState<BooksTabs>()
+
+  const [{ tabName }, updateQueryState] = useQueryState<{
+    tabName: BooksTab['name']
+  }>(defaultQueryState)
 
   const tabs = useMemo(() => {
     const tabs = {
@@ -38,8 +46,8 @@ const App = () => {
     }
 
     for (const book of books) {
-      const bookStatus = booksTabs[book.id] ?? 'toRead'
-      tabs[bookStatus].items.push(book)
+      const tabName = booksTabs[book.id] ?? 'toRead'
+      tabs[tabName].items.push(book)
     }
 
     return tabs
@@ -47,17 +55,46 @@ const App = () => {
 
   const tabsList = useMemo(() => Object.values(tabs), [tabs])
 
+  const filteredBooks = useMemo(() => {
+    let books = tabs[tabName].items
+    return books
+  }, [tabs, tabName])
+
+  const handleBookTabChange = (
+    bookId: Book['id'],
+    tabName: TabName
+  ) => {
+    const value = { ...booksTabs, [bookId]: tabName }
+    setBooksTabs(value)
+    idb.set('booksTabs', value)
+  }
+
   useEffect(() => {
-    fetchBooks().then(({ items }) => setBooks(items))
+    Promise.all([
+      fetchBooks(),
+      idb.get<BooksTabs>('booksTabs')
+    ]).then(([
+      { items },
+      booksTabs
+    ]) => {
+      setBooks(items)
+      setBooksTabs(booksTabs)
+    })
   }, [])
 
   return (
     <Panel
       tabs={tabsList}
-      selectedTabName="toRead"
+      selectedTabName={tabName}
+      onChangeTab={tabName => updateQueryState({ tabName })}
     >
-      {books.map(book => (
-        <BookCard key={book.id} {...book} />
+      {filteredBooks.map(book => (
+        <BookCard
+          key={book.id}
+          tabName={tabName}
+          onChangeTab={tabName => handleBookTabChange(book.id, tabName)}
+          {...book}
+        />
       ))}
     </Panel>
   )
