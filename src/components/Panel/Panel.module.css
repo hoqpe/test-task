@@ -1,0 +1,36 @@
+.root {
+  --Panel__border: 1px solid #999;
+  display: flex;
+  flex-direction: column;
+  border: var(--Panel__border);
+}
+
+.tabs {
+  display: flex;
+}
+
+.tab {
+  height: 50px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: var(--Panel__border);
+  flex-grow: 1;
+}
+
+.tab + .tab {
+  border-left: var(--Panel__border);
+}
+
+.tab.active {
+  font-weight: 700;
+  border-bottom: 0;
+}
+
+.content {
+  flex-grow: 1;
+}
+
+.content > * + * {
+  border-top: var(--Panel__border);
+}

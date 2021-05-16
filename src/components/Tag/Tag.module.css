@@ -1,0 +1,6 @@
+.root {
+  all: unset;
+  background-color: #ddd;
+  padding: 4px;
+  cursor: pointer;
+}
