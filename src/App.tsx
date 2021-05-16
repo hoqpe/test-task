@@ -4,8 +4,15 @@ import { Book, Tab, TabName } from './types'
 import { useQueryState } from './hooks'
 import { Panel } from './components/Panel'
 import { BookCard } from './components/BookCard'
+import { SelectedTagsList } from './components/SelectedTagsList'
+import styles from './App.module.css'
 
 type BooksTabs = Record<Book['id'], TabName>
+
+type QueryState = {
+  tabName: BooksTab['name']
+  tags: string[]
+}
 
 class BooksTab implements Tab {
   items: Book[] = []
@@ -23,15 +30,20 @@ const fetchBooks = async (): Promise<{ items: Book[] }> => {
   return await res.json()
 }
 
-const defaultQueryState = { tabName: 'toRead' as BooksTab['name'] }
+const filterByTag = (books: Book[], tags: string[]) => {
+  return books.filter(book => tags.every(tag => book.tags.includes(tag)))
+}
+
+const defaultQueryState: QueryState = { tabName: 'toRead', tags: [] }
 
 const App = () => {
   const [books, setBooks] = useState<Book[]>([])
   const [booksTabs, setBooksTabs] = useState<BooksTabs>()
 
-  const [{ tabName }, updateQueryState] = useQueryState<{
-    tabName: BooksTab['name']
-  }>(defaultQueryState)
+  const [{
+    tabName,
+    tags
+  }, updateQueryState] = useQueryState<QueryState>(defaultQueryState)
 
   const tabs = useMemo(() => {
     const tabs = {
@@ -57,8 +69,13 @@ const App = () => {
 
   const filteredBooks = useMemo(() => {
     let books = tabs[tabName].items
+
+    if (tags.length) {
+      books = filterByTag(books, tags)
+    }
+
     return books
-  }, [tabs, tabName])
+  }, [tabs, tabName, tags])
 
   const handleBookTabChange = (
     bookId: Book['id'],
@@ -88,11 +105,23 @@ const App = () => {
       selectedTabName={tabName}
       onChangeTab={tabName => updateQueryState({ tabName })}
     >
+      {!!tags.length && (
+        <SelectedTagsList
+          tags={tags}
+          onResetTags={() => updateQueryState({ tags: [] })}
+        />
+      )}
+      {!filteredBooks.length && (
+        <div className={styles.emptyListMessage}>
+          List is empty
+        </div>
+      )}
       {filteredBooks.map(book => (
         <BookCard
           key={book.id}
           tabName={tabName}
           onChangeTab={tabName => handleBookTabChange(book.id, tabName)}
+          onSelectTag={tag => updateQueryState({ tags: [...tags, tag] })}
           {...book}
         />
       ))}

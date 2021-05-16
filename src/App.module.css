@@ -1,0 +1,5 @@
+.emptyListMessage {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
+}

@@ -5,6 +5,7 @@ import styles from './BookCard.module.css'
 export type BookCardProps = Book & {
   tabName: TabName
   onChangeTab: (tabName: TabName) => void
+  onSelectTag: (tag: string) => void
 }
 
 export const BookCard = ({
@@ -13,7 +14,8 @@ export const BookCard = ({
   description,
   tags,
   tabName,
-  onChangeTab
+  onChangeTab,
+  onSelectTag
 }: BookCardProps) => (
   <div className={styles.root}>
     <div>
@@ -62,7 +64,7 @@ export const BookCard = ({
     <ul className={styles.tags}>
       {tags.map(tag => (
         <li key={tag}>
-          <Tag name={tag} />
+          <Tag name={tag} onClick={() => onSelectTag(tag)} />
         </li>
       ))}
     </ul>
