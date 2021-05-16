@@ -2,5 +2,8 @@
   all: unset;
   background-color: #ddd;
   padding: 4px;
+}
+
+.root:not(:disabled) {
   cursor: pointer;
 }

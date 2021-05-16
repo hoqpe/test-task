@@ -86,6 +86,12 @@ const App = () => {
     idb.set('booksTabs', value)
   }
 
+  const handleSelectTag = (tag: string) => {
+    if (!tags.includes(tag)) {
+      updateQueryState({ tags: [...tags, tag]})
+    }
+  }
+
   useEffect(() => {
     Promise.all([
       fetchBooks(),
@@ -101,6 +107,7 @@ const App = () => {
 
   return (
     <Panel
+      className={styles.root}
       tabs={tabsList}
       selectedTabName={tabName}
       onChangeTab={tabName => updateQueryState({ tabName })}
@@ -121,7 +128,7 @@ const App = () => {
           key={book.id}
           tabName={tabName}
           onChangeTab={tabName => handleBookTabChange(book.id, tabName)}
-          onSelectTag={tag => updateQueryState({ tags: [...tags, tag] })}
+          onSelectTag={handleSelectTag}
           {...book}
         />
       ))}

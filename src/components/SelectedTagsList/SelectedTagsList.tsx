@@ -10,7 +10,7 @@ export const SelectedTagsList = (props: SelectedTagsListProps) => (
   <div className={styles.root}>
     Filtered by tags:
     <div className={styles.tagsList}>
-      {props.tags.map(tag => <Tag name={tag} disabled />)}
+      {props.tags.map(tag => <Tag key={tag} name={tag} disabled />)}
     </div>
     <button
       className={styles.resetTagsBtn}

@@ -1,8 +1,20 @@
 body {
   margin: 0;
-  padding: 24px;
   font-family: 'Roboto', sans-serif;
   color: #000;
+}
+
+@media (min-width: 1280px) {
+  body {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+#root {
+  width: clamp(480px, 100%, 1280px);
+  box-sizing: content-box;
+  padding: 24px;
 }
 
 * {
